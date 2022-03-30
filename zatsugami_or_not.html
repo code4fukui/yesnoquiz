@@ -1,0 +1,72 @@
+
+<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="viewport" content="width=device-width"/>
+
+<title>クイズ 雑紙か否か</title>
+<link rel="apple-touch-icon" href="https://code4fukui.github.io/yesnoquiz/zatsugamiornot.png"/>
+<meta property="og:image" content="https://code4fukui.github.io/yesnoquiz/zatsugamiornot.png"/>
+<link rel="stylesheet" type="text/css" href="https://fukuno.jig.jp/app/opendatacity/q2js.css"/>
+<script src=https://fukuno.jig.jp/fukuno.js></script>
+<script src=https://fukuno.jig.jp/app/opendatacity/q2.js></script>
+
+<script type="module">
+import { CSV } from "https://js.sabae.cc/CSV.js";
+
+onload = async () => {
+	const data = CSV.toJSON(await CSV.fetch("zatsugami.csv"));
+	console.log(data);
+
+	// タイトル
+	const title = "クイズ 雑紙か否か"
+
+	// 調査
+	shuffle(data);
+	
+	// 問題文、正解、誤答
+	const quiz = []
+	//	quiz.push( [ "福島県 磐梯町", "ばんだいまち", "ばんだいちょう", true ])
+	for (let i = 0; i < Math.min(data.length, 10); i++) {
+		const d = data[i];
+		quiz.push([d.name, "雑紙", "雑紙ではない", d.flg_zatsugami == 1]);
+	}
+
+	// クリアした時
+	const callback = (pnt) => {
+		alert(pnt + "問正解！ 正解率 " + Math.floor(100 * pnt / quiz.length) + "%")
+
+		// 即、ジャンプしたい場合はこちら
+//		location = "https://fukuno.jig.jp/2355"
+
+		// ダイアログ形式で尋ねたい場合はこちら
+		if (confirm("これって雑紙？ - ざつ神さまプロジェクトのページを見る？")) {
+			location = "http://www.sabae-npo.org/doyano/zatsugami/bunbetsu.html";
+		} else if (confirm("もういちど？")) {
+			location.reload()
+		}
+	}
+	// クイズスタート
+	startQuiz(title, quiz, callback)
+}
+</script>
+</head><body>
+
+<div id=head class=theme>第1問</div>
+<div id=main>
+	<!--<div id=ind class=indcorrect></div>-->
+	<div id=ind class=indcorrect>正解</div>
+	<!--<div id=ind class=indincorrect>不正解</div>-->
+	<div id=q>福島県磐梯町</div>
+	<div id=ans>
+		<div id=ans1>まち</div>
+		<div class=correct id=ans2>ちょう</div>
+	</div>
+</div>
+
+<div id=credit class=theme>
+	APP: <a href=https://github.com/code4fukui/yesnoquiz/>CC BY Code for FUKUI</a><br>
+	LIB: <a href=https://fukuno.jig.jp/2752>CC BY fukuno.jig.jp - 2択クイズアプリ framework q2.js</a><br>
+	DATA: CC0 <a href=zatsugami.csv>雑紙CSV</a><br>
+</div>
+</body></html>
